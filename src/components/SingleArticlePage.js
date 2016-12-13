@@ -3,7 +3,8 @@ import React, { Component, PropTypes } from 'react';
 import {Editor, EditorState, RichUtils, ContentState} from 'draft-js';
 import {convertFromHTML, createFromBlockArray, createWithContent } from 'draft-js';
 import {stateToHTML} from 'draft-js-export-html';
-
+import {getBlockStyle, StyleButton, BlockStyleControls, InlineStyleControls} from './Editorbtn';
+import {textstyle, styleMap, contentstyle, spanStyle} from './styleJS';
 
 
 class SingleArticlePage extends Component {
@@ -160,50 +161,47 @@ class SingleArticlePage extends Component {
   renderTitle = () => {
      if (this.state.isEditing)
        return (
-         <span style = {mystyle}> Title :
+         <span style = {textstyle}> Title :
           <input 
             name="title"
             placeholder="title"
             autoFocus
             value={this.state.title}
             onChange={this.handletitle.bind(this)}
-            style = {mystyle}
+            style = {textstyle}
           />
         </span>
 
       );
     else 
-      return (<span style = {mystyle}>Title :{this.state.title}</span>);
+      return (<span style = {textstyle}>Title :{this.state.title}</span>);
   };        
          
   renderAuthor = () => {
     if (this.state.isEditing === true)
-       return (
-        <span style = {mystyle}> Author :
+      return (
+        <span style = {textstyle}> Author :
           <input 
             name="author"
             placeholder="author"
             autoFocus
             value={this.state.author}
             onChange={this.handleauthor.bind(this)}
-            style = {mystyle}
+            style = {textstyle}
           />
         </span>
-        
       );
     else 
-      return (<span style = {mystyle}>Author :{this.state.author}</span>);
+      return (<span style = {textstyle}>Author :{this.state.author}</span>);
   };
   renderContent = () => {
     const {content} = this.state;
     if (this.state.isEditing){
-
-      
       return this.rendeRichAricle();
     }
     else {
       return ( 
-        <span style = {mystyle}>Content : 
+        <span style = {textstyle}>Content : 
           <div dangerouslySetInnerHTML={{__html: content}} style = {contentstyle}></div>
         </span>
       );
@@ -301,133 +299,8 @@ class SingleArticlePage extends Component {
       )
   }
 }
-const mystyle ={
-
-  alignItems: 'center',
-  fontFamily: '"Inconsolata", "Menlo", "Consolas", monospace',
-  fontSize:25,
-  pan: 20,
-}
-const contentstyle ={
-
-  alignItems: 'center',
-  fontFamily: '"Inconsolata", "Menlo", "Consolas", monospace',
-  fontSize:16,
-  padding: 25,
-
-  margin:12,
 
 
-}
-
-const spanStyle = {
-  margin: 80,
-  fontSize: 30
-
-};
-
-  
-
-
-// Custom overrides for "code" style.
-const styleMap = {
-  CODE: {
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
-    fontFamily: '"Inconsolata", "Menlo", "Consolas", monospace',
-    fontSize: 16,
-    padding: 2,
-  },
-};
-
-function getBlockStyle(block) {
-  switch (block.getType()) {
-    case 'blockquote': return 'RichEditor-blockquote';
-    default: return null;
-  }
-}
-
-class StyleButton extends React.Component {
-  constructor() {
-    super();
-    this.onToggle = (e) => {
-      e.preventDefault();
-      this.props.onToggle(this.props.style);
-    };
-  }
-
-  render() {
-    let className = 'RichEditor-styleButton';
-    if (this.props.active) {
-      className += ' RichEditor-activeButton';
-    }
-
-    return (
-      <span className={className} onMouseDown={this.onToggle}>
-        {this.props.label}
-      </span>
-    );
-  }
-}
-
-const BLOCK_TYPES = [
-  {label: 'H1', style: 'header-one'},
-  {label: 'H2', style: 'header-two'},
-  {label: 'H3', style: 'header-three'},
-  {label: 'H4', style: 'header-four'},
-  {label: 'H5', style: 'header-five'},
-  {label: 'H6', style: 'header-six'},
-  {label: 'Blockquote', style: 'blockquote'},
-  {label: 'UL', style: 'unordered-list-item'},
-  {label: 'OL', style: 'ordered-list-item'},
-  {label: 'Code Block', style: 'code-block'},
-];
-
-const BlockStyleControls = (props) => {
-  const {editorState} = props;
-  const selection = editorState.getSelection();
-  const blockType = editorState
-    .getCurrentContent()
-    .getBlockForKey(selection.getStartKey())
-    .getType();
-
-  return (
-    <div className="RichEditor-controls">
-      {BLOCK_TYPES.map((type) =>
-        <StyleButton
-          key={type.label}
-          active={type.style === blockType}
-          label={type.label}
-          onToggle={props.onToggle}
-          style={type.style}
-        />
-      )}
-    </div>
-  );
-};
-
-var INLINE_STYLES = [
-  {label: 'Bold', style: 'BOLD'},
-  {label: 'Italic', style: 'ITALIC'},
-  {label: 'Underline', style: 'UNDERLINE'},
-  {label: 'Monospace', style: 'CODE'},
-];
-
-const InlineStyleControls = (props) => {
-  var currentStyle = props.editorState.getCurrentInlineStyle();
-  return (
-    <div className="RichEditor-controls">
-      {INLINE_STYLES.map(type =>
-        <StyleButton
-          key={type.label}
-          active={currentStyle.has(type.style)}
-          label={type.label}
-          onToggle={props.onToggle}
-          style={type.style}
-        />
-      )}
-    </div>
-  );
-};
 
 
 export default SingleArticlePage;
